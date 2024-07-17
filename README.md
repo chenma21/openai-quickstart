@@ -159,3 +159,23 @@ Django Peng - pjt73651@email.com
 ![alt text](image-1.png)
 
 ##### code : openai_api/gpt-4v.ipynb
+
+
+## homework2 - PDF translator
+- 修改config.yaml openapi_key以及base_url  
+   - 代码位置:config.yaml
+- main文件中引入api_key和base_url (如果没有从命令行中指定 就从config.yaml中拿) 
+  - 代码位置:main.py
+- 修改openai_model 传入api_key和base_url  
+  - 代码位置: /model/openai_model.py
+- 通过命令行成功运行项目 python ai_translator/main.py --model_type OpenAIModel --file_format markdown --book tests/test.pdf --openai_model gpt-3.5-turbo 翻译出中文文档
+- 修改translate_pdf方法传入的参数 比如传入日语 翻译成日语的文档
+- 修改 main.py 用gradio生成gui界面
+
+![alt text](image-5.png)
+
+![alt text](image-2.png)
+
+![alt text](image-3.png)
+
+![alt text](image-4.png)
