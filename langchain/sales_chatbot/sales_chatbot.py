@@ -4,11 +4,13 @@ from langchain_openai import OpenAIEmbeddings
 from langchain.chains import RetrievalQA
 from langchain_openai import ChatOpenAI
 from langchain_community.vectorstores import FAISS
+from langchain.prompts import PromptTemplate
+from langchain.chains import LLMChain
 
 
 def initialize_sales_bot(vector_store_dir: str="real_estates_sale"):
-    db = FAISS.load_local(vector_store_dir, OpenAIEmbeddings())
-    llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)
+    db = FAISS.load_local(vector_store_dir, OpenAIEmbeddings(base_url="https://api.xiaoai.plus/v1",api_key="sk-IrIgzFee3yL0i2ccD5Bb6820566843EcBcDd1b94B034D01a"),allow_dangerous_deserialization=True)
+    llm = ChatOpenAI(model_name="gpt-4", temperature=0, base_url="https://api.xiaoai.plus/v1",api_key="sk-IrIgzFee3yL0i2ccD5Bb6820566843EcBcDd1b94B034D01a")
     
     global SALES_BOT    
     SALES_BOT = RetrievalQA.from_chain_type(llm,
@@ -22,25 +24,53 @@ def initialize_sales_bot(vector_store_dir: str="real_estates_sale"):
 def sales_chat(message, history):
     print(f"[message]{message}")
     print(f"[history]{history}")
+
     # TODO: 从命令行参数中获取
     enable_chat = True
 
-    ans = SALES_BOT({"query": message})
-    # 如果检索出结果，或者开了大模型聊天模式
-    # 返回 RetrievalQA combine_documents_chain 整合的结果
+    # 將歷史對話格式化為字符串
+    formatted_history = "\n".join([f"客戶: {h[0]}\n銷售助理: {h[1]}" for h in history])
+
+    ans = SALES_BOT({"query": message, "chat_history": formatted_history})
+    
     if ans["source_documents"] or enable_chat:
         print(f"[result]{ans['result']}")
         print(f"[source_documents]{ans['source_documents']}")
-        return ans["result"]
-    # 否则输出套路话术
+        if len(ans["source_documents"]) == 0:
+            template = """
+            你是一個專業的車輛銷售助理。你的回答應該自然、友好，並且要有連貫性。請記住以下幾點：
+            1. 總是要理解並回應客戶最新的問題，同時考慮之前的對話內容。
+            2. 如果客戶只提供簡短的回答，試著根據上下文推斷他們的意思。
+            3. 避免重複提問，除非真的需要澄清。
+            4. 用自然的語氣交談，就像真人一樣。避免過於正式或機械的表達。
+            5. 如果不確定，可以做出合理的假設，並在回答中體現出來。
+            6. 不要提及你是一個大模型的概念以及語氣，想象你是一個專業的4S店助理。
+
+            以下是之前的對話：
+            {history}
+
+            客戶的最新回答是：{question}
+
+            請給出一個自然、連貫的回覆，要像真人銷售助理一樣：
+            """
+            llm = ChatOpenAI(model_name="gpt-4", temperature=0, base_url="https://api.xiaoai.plus/v1",api_key="sk-IrIgzFee3yL0i2ccD5Bb6820566843EcBcDd1b94B034D01a")
+
+            prompt = PromptTemplate(template=template, input_variables=["history", "question"])
+            chain = LLMChain(llm=llm, prompt=prompt)
+
+            response = chain.run(history=formatted_history, question=message)
+            
+            return response    
+        else:
+            return ans["result"]
     else:
-        return "这个问题我要问问领导"
+        return "這個問題我要問問領導~"
     
 
 def launch_gradio():
     demo = gr.ChatInterface(
         fn=sales_chat,
-        title="房产销售",
+        title="汽車销售",
         # retry_btn=None,
         # undo_btn=None,
         chatbot=gr.Chatbot(height=600),

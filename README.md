@@ -189,3 +189,41 @@ Django Peng - pjt73651@email.com
   
   ![alt text](image-6.png)
   ![alt text](image-7.png)
+
+
+## homework4 - sales_chatbot
+- 首先添加关于车辆销售的txt文档
+- 需要注意先执行过
+  - db = FAISS.from_documents(docs, OpenAIEmbeddings(base_url="https://api.xiaoai.plus/v1",api_key="sk-IrIgzFee3yL0i2ccD5Bb6820566843EcBcDd1b94B034D01a"))
+  - db.save_local("real_estates_sale")
+  - 由于我已经在jupyter那边执行过 save到了real_estates_sale文件夹下面 所以向量数据库中已经有了关于车辆销售的信息
+- 有了之后就可以正常回答关于车辆销售的问题 但是现在还会暴露是一个AI
+- 修改代码 代码位置: sales_chatbot.py 通过prompt的形式用promptTemplate传递question和history 如果source_documents也就是向量数据库中相关性都小于0.8 那么就通过gpt4回答 并且给定prompt尽量像个人类
+  -         template = """
+            你是一個專業的車輛銷售助理。你的回答應該自然、友好，並且要有連貫性。請記住以下幾點：
+            1. 總是要理解並回應客戶最新的問題，同時考慮之前的對話內容。
+            2. 如果客戶只提供簡短的回答，試著根據上下文推斷他們的意思。
+            3. 避免重複提問，除非真的需要澄清。
+            4. 用自然的語氣交談，就像真人一樣。避免過於正式或機械的表達。
+            5. 如果不確定，可以做出合理的假設，並在回答中體現出來。
+            6. 不要提及你是一個大模型的概念以及語氣，想象你是一個專業的4S店助理。
+
+            以下是之前的對話：
+            {history}
+
+            客戶的最新回答是：{question}
+
+            請給出一個自然、連貫的回覆，要像真人銷售助理一樣：
+            """
+
+- 运行结果
+  #### 这都是向量数据库中没有的内容
+   ![alt text](image-8.png)
+   ![alt text](image-9.png)
+  #### 向量数据库中有的内容
+   ![alt text](image-10.png)
+   ![alt text](image-11.png)
+
+  #### 控制台打印
+  ![alt text](image-12.png) 
+  ![alt text](image-13.png)
