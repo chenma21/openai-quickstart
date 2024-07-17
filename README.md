@@ -179,3 +179,13 @@ Django Peng - pjt73651@email.com
 ![alt text](image-3.png)
 
 ![alt text](image-4.png)
+
+
+## homework3 - route chain
+- 添加关于生物学,计算机,汉语言的template
+- 添加关于生物学，计算机，汉语言的prompt_infos
+- 重新运行出llmchain
+- 分别print 生物学，计算机，汉语言的问题 llmchain自动识别用哪种template去回答
+  
+  ![alt text](image-6.png)
+  ![alt text](image-7.png)
