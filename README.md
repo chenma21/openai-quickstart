@@ -146,3 +146,16 @@ Django Peng - pjt73651@email.com
 
 项目链接: https://github.com/DjangoPeng/openai-quickstart
 
+
+## homework1 - GPT-4V的使用
+- 上传手写图片文件(hand_writing_3.jpg)到images文件夹
+- 改变query_base64_image_description prompt 并生成结果
+- 调用输出content
+
+![alt text](image.png)
+
+- 显示markdown文档并且下载markdown文档到images文件夹里
+
+![alt text](image-1.png)
+
+##### code : openai_api/gpt-4v.ipynb
